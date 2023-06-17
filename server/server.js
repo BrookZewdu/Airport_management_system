@@ -1,6 +1,7 @@
 const registerRouter = require("./routes/Register");
 const loginRouter = require("./routes/login");
 const flightRouter = require("./routes/flight");
+const cityRouter = require("./routes/city");
 
 const express = require('express');
 const app = express();
@@ -17,6 +18,8 @@ app.use(cors());
 app.use("/register", registerRouter); 
 app.use("/login", loginRouter);
 app.use("/flights", flightRouter); 
+app.use("/cities", cityRouter);
+
 // const customerRouter = require("./routes/Customer"); 
 // app.use("/customer", customerRouter);
 // const staffRouter = require("./routes/Staff");

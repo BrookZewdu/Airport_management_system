@@ -1,4 +1,6 @@
 const sql = require('../db');
+const { v4: uuidv4 } = require('uuid');
+
 
 const Flight = function createFlight(flight) {
     let result = {};
@@ -16,6 +18,26 @@ const Flight = function createFlight(flight) {
     result.base_price = flight.base_price;
     result.duration = flight.duration;
     result.status = flight.status;
+    return result;
+};
+
+Flight.Airport = function createAirport(airport) {
+    let result = {};
+    result.airport_name = airport.airport_name;
+    result.state = airport.state;
+    result.country_name = airport.country_name;
+    return result;
+};
+
+Flight.Airplane = function createAirplane(airplane) {
+    let result = {};
+    result.airplane_id = uuidv4();
+    result.model = airplane.model;
+    result.range = parseFloat(airplane.range);
+    result.capacity = parseInt(airplane.capacity);
+    result.maintainance = parseInt(airplane.maintainance) || 0;
+    result.status = airplane.status;
+    result.airplane_name = airplane.airplane_name;
     return result;
 };
 
@@ -72,31 +94,42 @@ Flight.insertAirplane = (flight, result) => {
     });
 }
 
+Flight.getAllAirports = (result) => {
+    sql.query('SELECT * FROM Airport', (err,res) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(null,err);
+            return;
+        }
+        console.log("Airports: " + res);
+        result(null,res);
+    });
+};
 
+Flight.getAllAirlines = (result) => {
+    sql.query('SELECT * FROM Airline', (err,res) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(null,err);
+            return;
+        }
+        console.log("Airlines: " + res);
+        result(null,res);
+    });
+};
 
-// Flight.getAllAirports = (result) => {
-//     sql.query('SELECT * FROM Airport', (err,res) => {
-//         if (err) {
-//             console.log("Error: ", err);
-//             result(null,err);
-//             return;
-//         }
-//         console.log("Airports: " + res);
-//         result(null,res);
-//     });
-// };
+Flight.getAllAirplanes = (result) => {
+    sql.query('SELECT * FROM Airplane', (err,res) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(null,err);
+            return;
+        }
+        console.log("Airplanes: " + res);
+        result(null,res);
+    });
+};
 
-// Flight.getAllAirlines = (result) => {
-//     sql.query('SELECT * FROM Airline', (err,res) => {
-//         if (err) {
-//             console.log("Error: ", err);
-//             result(null,err);
-//             return;
-//         }
-//         console.log("Airlines: " + res);
-//         result(null,res);
-//     });
-// };
 
 // Flight.getAirplanesOwnedByAirline = (airline_name, result) => {
 //     sql.query('SELECT * FROM airplane WHERE airline_name=?',

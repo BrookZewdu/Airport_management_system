@@ -31,9 +31,5 @@ City.getAllCities = (result) => {
     });
 };
 
-
-
-
-
 module.exports = { City }
 

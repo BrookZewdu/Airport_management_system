@@ -24,7 +24,35 @@ router.post("/", async (req, res) => {
                 console.log("Matched!");
                 const secret = process.env.JWT_SECRET || "secret";
                 const accessToken = sign({email_address: data[0].email_address}, secret);
-                res.json(accessToken);
+                console.log(data);
+                res.json({
+                    status: "success",
+                    token : accessToken,
+                    data : {
+                        user : data[0]
+                    }
+                });
+                /*
+                {
+    "status": "success",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFiZW5pIiwiaWF0IjoxNjg3MDA3ODk3LCJleHAiOjE2ODcwOTQyOTd9.ZTaZtuDOTjCC3FDbI7a0t0lquEZw1x5pZEN_itLpOVo",
+    "data": {
+        "user": {
+            "CUSTOMER_ID": "abeni",
+            "PASSWORD": "$2a$10$CZVoQRBTtrI.4wR9Ke9wd.nVYqBkhSkuxyfNqNmON1hrleiRpaZ22",
+            "EMAIL_ID": "abeni@gmail.com",
+            "CUSTOMER_NAME": "Abeni abeni",
+            "GENDER": "M",
+            "DOB": "2011-06-16T21:00:00.000Z",
+            "ROLE": "N",
+            "PROFESSION": "STUDENT",
+            "COUNTRY_CODE": "ET",
+            "PHONE_NO": "0922006222",
+            "ADDRESS": "Belay zeleke rd"
+        }
+    }
+}
+                */
             });
         }
     });
