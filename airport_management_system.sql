@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`attendance` (
   `employee_id` VARCHAR(50) NOT NULL,
   `shift` VARCHAR(50) NOT NULL,
   `job_type` VARCHAR(50) NOT NULL,
-  `date` DATE NOT NULL DEFAULT now(),
+  `date` DATE NOT NULL,
   INDEX `fk_attendance_employee1_idx` (`employee_id` ASC) VISIBLE,
   PRIMARY KEY (`employee_id`),
   CONSTRAINT `fk_attendance_employee1`
@@ -244,29 +244,7 @@ CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`maintainance` (
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Airport_Management_system`.`airplane_needs_maintainance`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`airplane_needs_maintainance` (
-  `start_date` DATE NOT NULL,
-  `end_date` DATE NOT NULL,
-  `airplane_id` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`start_date`, `end_date`, `airplane_id`),
-  INDEX `fk_airplane_needs_maintainance_maintainance1_idx` (`start_date` ASC, `end_date` ASC) VISIBLE,
-  INDEX `fk_airplane_needs_maintainance_airplane1_idx` (`airplane_id` ASC) VISIBLE,
-  CONSTRAINT `fk_airplane_needs_maintainance_maintainance1`
-    FOREIGN KEY (`start_date` , `end_date`)
-    REFERENCES `Airport_Management_system`.`maintainance` (`start_date` , `end_date`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_airplane_needs_maintainance_airplane1`
-    FOREIGN KEY (`airplane_id`)
-    REFERENCES `Airport_Management_system`.`airplane` (`airplane_id`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+CREATE INDEX `maintainance_idx` ON maintainance(`start_date`, `end_date`);
 
 
 -- -----------------------------------------------------
@@ -294,13 +272,59 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `Airport_Management_system`.`passenger`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `Airport_Management_system`;
 CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`passenger` (
-  `email` VARCHAR(100) NOT NULL,
   `passenger_id` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
   `f_name` VARCHAR(50) NOT NULL,
   `l_name` VARCHAR(50) NOT NULL,
   `phone` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`email`, `passenger_id`))
+  `passport_number` VARCHAR(20) NOT NULL,
+  `passport_expiration` DATE NOT NULL,
+  `passport_country` VARCHAR(50) NOT NULL,
+  `date_of_birth` DATE NOT NULL,
+  PRIMARY KEY (`passenger_id`, `email`))
+ENGINE = InnoDB;
+CREATE INDEX `passenger_id_idx` ON passenger(`passenger_id`);
+
+
+-- -----------------------------------------------------
+-- Table `Airport_Management_system`.`ticket_payment_detail`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`ticket_payment_detail` (
+  `ticket_id` VARCHAR(50) NOT NULL,
+  `payment_method` VARCHAR(50) NOT NULL,
+  `payment_amount` DECIMAL(10,2) NOT NULL,
+  `payment_date` DATE NOT NULL,
+  INDEX `fk_ticket_payment_detail_tickets1_idx` (`ticket_id` ASC) VISIBLE,
+  PRIMARY KEY (`ticket_id`),
+  CONSTRAINT `fk_ticket_payment_detail_tickets1`
+    FOREIGN KEY (`ticket_id`)
+    REFERENCES `Airport_Management_system`.`tickets` (`ticket_id`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Airport_Management_system`.`airport_has_employee`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`airport_has_employee` (
+  `employee_id` VARCHAR(50) NOT NULL,
+  `airport_name` VARCHAR(50) NOT NULL,
+  INDEX `fk_airport_has_employee_employee1_idx` (`employee_id` ASC) VISIBLE,
+  INDEX `fk_airport_has_employee_airport1_idx` (`airport_name` ASC) VISIBLE,
+  PRIMARY KEY (`employee_id`, `airport_name`),
+  CONSTRAINT `fk_airport_has_employee_employee1`
+    FOREIGN KEY (`employee_id`)
+    REFERENCES `Airport_Management_system`.`employee` (`employee_id`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_airport_has_employee_airport1`
+    FOREIGN KEY (`airport_name`)
+    REFERENCES `Airport_Management_system`.`airport` (`airport_name`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -330,19 +354,19 @@ ENGINE = InnoDB;
 -- Table `Airport_Management_system`.`flightSchedule_contains_passenger`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`flightSchedule_contains_passenger` (
-  `passenger_id` VARCHAR(50) NOT NULL,
   `flight_code` VARCHAR(50) NOT NULL,
-  INDEX `fk_flightSchedule_contains_passenger_passenger1_idx` (`passenger_id` ASC) VISIBLE,
+  `passenger_id` VARCHAR(50) NOT NULL,
   INDEX `fk_flightSchedule_contains_passenger_flight_schedule1_idx` (`flight_code` ASC) VISIBLE,
-  PRIMARY KEY (`passenger_id`, `flight_code`),
-  CONSTRAINT `fk_flightSchedule_contains_passenger_passenger1`
-    FOREIGN KEY (`passenger_id`)
-    REFERENCES `Airport_Management_system`.`passenger` (`passenger_id`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE,
+  INDEX `fk_flightSchedule_contains_passenger_passenger1_idx` (`passenger_id` ASC) VISIBLE,
+  PRIMARY KEY (`flight_code`, `passenger_id`),
   CONSTRAINT `fk_flightSchedule_contains_passenger_flight_schedule1`
     FOREIGN KEY (`flight_code`)
     REFERENCES `Airport_Management_system`.`flight_schedule` (`flight_code`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_flightSchedule_contains_passenger_passenger1`
+    FOREIGN KEY (`passenger_id`)
+    REFERENCES `Airport_Management_system`.`passenger` (`passenger_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -352,38 +376,20 @@ ENGINE = InnoDB;
 -- Table `Airport_Management_system`.`passenger_books_and_cancels_tickets`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`passenger_books_and_cancels_tickets` (
-  `ticket_id` VARCHAR(50) NOT NULL,
   `passenger_id` VARCHAR(50) NOT NULL,
-  INDEX `fk_passenger_books_and_cancels_tickets_tickets1_idx` (`ticket_id` ASC) VISIBLE,
+  `ticket_id` VARCHAR(50) NOT NULL,
   INDEX `fk_passenger_books_and_cancels_tickets_passenger1_idx` (`passenger_id` ASC) VISIBLE,
-  PRIMARY KEY (`ticket_id`, `passenger_id`),
-  CONSTRAINT `fk_passenger_books_and_cancels_tickets_tickets1`
-    FOREIGN KEY (`ticket_id`)
-    REFERENCES `Airport_Management_system`.`tickets` (`ticket_id`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE,
+  PRIMARY KEY (`passenger_id`, `ticket_id`),
+  INDEX `fk_passenger_books_and_cancels_tickets_tickets1_idx` (`ticket_id` ASC) VISIBLE,
   CONSTRAINT `fk_passenger_books_and_cancels_tickets_passenger1`
     FOREIGN KEY (`passenger_id`)
     REFERENCES `Airport_Management_system`.`passenger` (`passenger_id`)
     ON DELETE NO ACTION
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Airport_Management_system`.`ticket_payment_detail`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`ticket_payment_detail` (
-  `ticket_id` VARCHAR(50) NOT NULL,
-  `payment_method` VARCHAR(50) NOT NULL,
-  `payment_amount` DECIMAL(10,2) NOT NULL,
-  `payment_date` DATE NOT NULL,
-  INDEX `fk_ticket_payment_detail_tickets1_idx` (`ticket_id` ASC) VISIBLE,
-  PRIMARY KEY (`ticket_id`),
-  CONSTRAINT `fk_ticket_payment_detail_tickets1`
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_passenger_books_and_cancels_tickets_tickets1`
     FOREIGN KEY (`ticket_id`)
     REFERENCES `Airport_Management_system`.`tickets` (`ticket_id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
@@ -392,14 +398,14 @@ ENGINE = InnoDB;
 -- Table `Airport_Management_system`.`baggage`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`baggage` (
-  `baggage_id` VARCHAR(50) NOT NULL,
   `passenger_id` VARCHAR(50) NOT NULL,
-  `source` VARCHAR(50) NULL,
-  `destination` VARCHAR(50) NULL,
-  `status` VARCHAR(50) NULL,
-  `weight` DECIMAL(10,2) NULL,
-  PRIMARY KEY (`baggage_id`),
+  `baggage_id` VARCHAR(50) NOT NULL,
+  `source` VARCHAR(50) NOT NULL,
+  `destination` VARCHAR(50) NOT NULL,
+  `status` VARCHAR(50) NOT NULL,
+  `weight` DECIMAL(10,2) NOT NULL,
   INDEX `fk_baggage_passenger1_idx` (`passenger_id` ASC) VISIBLE,
+  PRIMARY KEY (`passenger_id`, `baggage_id`),
   CONSTRAINT `fk_baggage_passenger1`
     FOREIGN KEY (`passenger_id`)
     REFERENCES `Airport_Management_system`.`passenger` (`passenger_id`)
@@ -407,8 +413,10 @@ CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`baggage` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE INDEX `baggage_idx` ON baggage(`baggage_id`);
 
--- -----------------------------------------------------
+
+-----------------------------------------------------
 -- Table `Airport_Management_system`.`baggage_payment_detail`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`baggage_payment_detail` (
@@ -429,44 +437,45 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Airport_Management_system`.`airport_has_employee`
+-- Table `Airport_Management_system`.`employee_control_baggage`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`airport_has_employee` (
+CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`employee_control_baggage` (
+  `baggage_id` VARCHAR(50) NOT NULL,
   `employee_id` VARCHAR(50) NOT NULL,
-  `airport_name` VARCHAR(50) NOT NULL,
-  INDEX `fk_airport_has_employee_employee1_idx` (`employee_id` ASC) VISIBLE,
-  INDEX `fk_airport_has_employee_airport1_idx` (`airport_name` ASC) VISIBLE,
-  PRIMARY KEY (`employee_id`, `airport_name`),
-  CONSTRAINT `fk_airport_has_employee_employee1`
-    FOREIGN KEY (`employee_id`)
-    REFERENCES `Airport_Management_system`.`employee` (`employee_id`)
+  INDEX `fk_employee_control_baggage_baggage1_idx` (`baggage_id` ASC) VISIBLE,
+  PRIMARY KEY (`baggage_id`, `employee_id`),
+  INDEX `fk_employee_control_baggage_employee1_idx` (`employee_id` ASC) VISIBLE,
+  CONSTRAINT `fk_employee_control_baggage_baggage1`
+    FOREIGN KEY (`baggage_id`)
+    REFERENCES `Airport_Management_system`.`baggage` (`baggage_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_airport_has_employee_airport1`
-    FOREIGN KEY (`airport_name`)
-    REFERENCES `Airport_Management_system`.`airport` (`airport_name`)
+  CONSTRAINT `fk_employee_control_baggage_employee1`
+    FOREIGN KEY (`employee_id`)
+    REFERENCES `Airport_Management_system`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Airport_Management_system`.`employee_control_baggage`
+-- Table `Airport_Management_system`.`aiplane_needs_maintainance`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`employee_control_baggage` (
-  `employee_id` VARCHAR(50) NOT NULL,
-  `baggage_id` VARCHAR(50) NOT NULL,
-  INDEX `fk_employee_control_baggage_employee1_idx` (`employee_id` ASC) VISIBLE,
-  INDEX `fk_employee_control_baggage_baggage1_idx` (`baggage_id` ASC) VISIBLE,
-  PRIMARY KEY (`employee_id`, `baggage_id`),
-  CONSTRAINT `fk_employee_control_baggage_employee1`
-    FOREIGN KEY (`employee_id`)
-    REFERENCES `Airport_Management_system`.`employee` (`employee_id`)
+CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`aiplane_needs_maintainance` (
+  `airplane_id` VARCHAR(50) NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  INDEX `fk_aiplane_needs_maintainance_airplane1_idx` (`airplane_id` ASC) VISIBLE,
+  INDEX `fk_aiplane_needs_maintainance_maintainance1_idx` (`start_date` ASC, `end_date` ASC) VISIBLE,
+  PRIMARY KEY (`airplane_id`, `start_date`, `end_date`),
+  CONSTRAINT `fk_aiplane_needs_maintainance_airplane1`
+    FOREIGN KEY (`airplane_id`)
+    REFERENCES `Airport_Management_system`.`airplane` (`airplane_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_employee_control_baggage_baggage1`
-    FOREIGN KEY (`baggage_id`)
-    REFERENCES `Airport_Management_system`.`baggage` (`baggage_id`)
+  CONSTRAINT `fk_aiplane_needs_maintainance_maintainance1`
+    FOREIGN KEY (`start_date` , `end_date`)
+    REFERENCES `Airport_Management_system`.`maintainance` (`start_date` , `end_date`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -475,3 +484,4 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+CREATE TABLE IF NOT EXISTS `Airport_Management_system`.`employee_serve_passenger` (   `passenger_id` VARCHAR(50) NOT NULL,   `employee_id` VARCHAR(50) NOT NULL,   INDEX `fk_employee_serve_passenger_passenger1_idx` (`passenger_id` ASC) VISIBLE,   INDEX `fk_employee_serve_passenger_employee1_idx` (`employee_id` ASC) VISIBLE,   PRIMARY KEY (`passenger_id`, `employee_id`),   CONSTRAINT `fk_employee_serve_passenger_passenger1`     FOREIGN KEY (`passenger_id`)     REFERENCES `Airport_Management_system`.`passenger` (`passenger_id`)     ON DELETE NO ACTION     ON UPDATE CASCADE,   CONSTRAINT `fk_employee_serve_passenger_employee1`     FOREIGN KEY (`employee_id`)     REFERENCES `Airport_Management_system`.`employee` (`employee_id`)     ON DELETE NO ACTION     ON UPDATE CASCADE) ENGINE = InnoDB
