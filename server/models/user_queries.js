@@ -1,19 +1,19 @@
-const sql = require('../db');
-const { v4: uuidv4 } = require('uuid');
+const sql = require("../db");
+const { v4: uuidv4 } = require("uuid");
 
 const Passenger = function createPassenger(passenger) {
-    let result = {};
-    result.email = passenger.email;
-    result.password = passenger.password;
-    result.f_name = passenger.f_name;
-    result.l_name = passenger.l_name;
-    result.phone = passenger.phone;
-    result.passport_number = passenger.passport_number;
-    result.passport_expiration = passenger.passport_expiration;
-    result.passport_country = passenger.passport_country;
-    result.date_of_birth = passenger.date_of_birth;
-    return result;
-}
+  let result = {};
+  result.email = passenger.email;
+  result.password = passenger.password;
+  result.f_name = passenger.f_name;
+  result.l_name = passenger.l_name;
+  result.phone = passenger.phone;
+  result.passport_number = passenger.passport_number;
+  result.passport_expiration = passenger.passport_expiration;
+  result.passport_country = passenger.passport_country;
+  result.date_of_birth = passenger.date_of_birth;
+  return;
+};
 
 // const Staff = function createStaff(staff) {
 //     let result = {}
@@ -26,16 +26,41 @@ const Passenger = function createPassenger(passenger) {
 // }
 
 Passenger.getPassengerInfo = (email, result) => {
-     sql.query('SELECT * FROM passenger WHERE email=?', [email], (err,res) => {
-        if (err) {
-            console.log("Error: ", err);
-            result(null,err);
-            return;
-        }
+  sql.query("SELECT * FROM passenger WHERE email=?", [email], (err, res) => {
+    if (err) {
+      console.log("Error: ", err);
+      result(null, err);
+      return;
+    }
 
-        result(null, res);
-        //console.log("Customer: " + res);
-    });
+    result(null, res);
+    //console.log("Customer: " + res);
+  });
+};
+
+Passenger.updatePassenger = (passenger, result) => {
+  sql.query(
+    "UPDATE passenger SET f_name=?, l_name=?, phone=?, passport_number=?, passport_expiration=?, passport_country=?, date_of_birth=? WHERE email=?",
+    [
+      passenger.f_name,
+      passenger.l_name,
+      passenger.phone,
+      passenger.passport_number,
+      passenger.passport_expiration,
+      passenger.passport_country,
+      passenger.date_of_birth,
+      passenger.email,
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("Error: ", err);
+        result(null, err);
+        return;
+      }
+      console.log("Updated Customer: " + res);
+      result(null, res);
+    }
+  );
 };
 
 // Staff.getStaffInfo = (staff_username, result) => {
@@ -51,22 +76,34 @@ Passenger.getPassengerInfo = (email, result) => {
 // };
 
 Passenger.insertCustomer = (passenger, result) => {
-    const uniqueId = uuidv4();
-    // console.log(passenger);
-    sql.query('INSERT INTO passenger VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-        [passenger.email, uniqueId,  passenger.f_name, passenger.l_name,
-            passenger.phone, passenger.passport_number, passenger.passport_expiration,
-            passenger.passport_country, passenger.date_of_birth, passenger.password], (err,res) => {
-            if (err) {
-                console.log("Error: ", err);
-                return;
-            }
-            console.log("Inserted Customer: " + res);
-        });
+  const uniqueId = uuidv4();
+  console.log(passenger);
+  sql.query(
+    "INSERT INTO passenger VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      passenger.email,
+      uniqueId,
+      passenger.f_name,
+      passenger.l_name,
+      passenger.phone,
+      passenger.passport_number,
+      passenger.passport_expiration,
+      passenger.passport_country,
+      passenger.date_of_birth,
+      passenger.password,
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("Error: ", err);
+        return;
+      }
+      console.log("Inserted Customer: " + res);
+    }
+  );
 };
 
 // Staff.insertStaff = (staff, result) => {
-//     sql.query('INSERT INTO airline_staff VALUES (?, ?, ?, ?, ?)', 
+//     sql.query('INSERT INTO airline_staff VALUES (?, ?, ?, ?, ?)',
 //         [staff.username, staff.password, staff.airline_name, staff.fname, staff.lname], (err,res) => {
 //             if (err) {
 //                 console.log("Error: ", err);
@@ -79,4 +116,4 @@ Passenger.insertCustomer = (passenger, result) => {
 // };
 
 // module.exports = { Passenger, Staff }
-module.exports = { Passenger }
+module.exports = { Passenger };
