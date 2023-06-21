@@ -136,7 +136,7 @@ function Cover() {
                 <Grid
                   container
                   spacing={2}
-                  sx={{ maxHeight: "35vh", overflowY: "scroll" }}
+                  sx={{ maxHeight: "50vh", overflowY: "scroll" }}
                 >
                   <Grid item xs={12} sm={6}>
                     <MDInput
@@ -258,7 +258,7 @@ function Cover() {
                       required
                       fullWidth
                       name="address"
-                      label="Address"
+                      label="Country"
                       id="address"
                       value={addressVal}
                       onChange={(e) => setAddressVal(e.target.value)}

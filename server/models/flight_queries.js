@@ -3,18 +3,30 @@ const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { validateToken } = require("../middleware/auth");
 
+// source, destination, departure, flight_type, arrival, airplane_id, base_price, duration, status
 const Flight = function createFlight(flight) {
   let result = {};
   result.flight_code = uuidv4();
   result.source = flight.source;
   result.destination = flight.destination;
-  result.departure = moment(flight.departure).format("YYYY-MM-DD HH:mm:ss");
+  result.departure =
+    flight.departure_date.split(":")[0].split("T")[0] + " " + flight.departure;
+  result.arrival =
+    flight.departure_date.split(":")[0].split("T")[0] + " " + flight.arrival;
+  // console.log(
+  //   "moment_date",
+  //   flight.departure_date,
+  //   "hello",
+  //   flight.arrival,
+  //   moment(flight.departure_date + flight.arrival).format("YYYY-MM-DD HH:mm:ss")
+  // );
   result.flight_type = flight.flight_type;
+
   // result.departure_date = flight.departure_date;
   // result.departure_time = flight.departure_time;
   // result.departure_city = flight.departure_airport_code;
   // result.arrival_date = flight.arrival_date;
-  result.arrival = moment(flight.arrival).format("YYYY-MM-DD HH:mm:ss");
+  // result.arrival = moment(flight.arrival).format("YYYY-MM-DD HH:mm:ss");
   // result.arrival_time = flight.arrival_time;
   // result.arrival_city = flight.arrival_airport_code;
   result.airplane_id = flight.airplane_id;
@@ -60,7 +72,7 @@ Flight.Ticket = function createTicket(ticket) {
 };
 
 Flight.getAllFlights = (result) => {
-  sql.query("call get_flight_schedule(curdate())", (err, res) => {
+  sql.query("call get_flight_schedule()", (err, res) => {
     if (err) {
       console.log("Error: ", err);
       result(null, err);
@@ -295,7 +307,34 @@ Flight.searchForFlight = (source_city, dest_city, dep_date, result) => {
 Flight.getUpcomingFlights = (passenger_id, result) => {
   console.log(passenger_id);
   sql.query(
-    "SELECT flight_code, airplane_id, fs.source, duration, fs.destination, flight_type, departure, arrival, model, maintainance, airplane_name, tickets.ticket_id, tickets.date_of_travel as booked_date, tickets.price, seat_number, source_airport.country_name as src_country_name, destination_airport.country_name as dst_country_name, source_airport.airport_name as src_airport, source_airport.IATA_code as srcIATA_code, destination_airport.IATA_code as dstIATA_code, destination_airport.airport_name as dst_airport FROM flight_schedule fs join airplane using (airplane_id) join tickets using (flight_code) join passenger_books_and_cancels_tickets bcf left join airport as source_airport on source_airport.state = fs.source left join airport as destination_airport on destination_airport.state = fs.destination WHERE bcf.passenger_id = ? AND departure >= ? order by departure",
+    `SELECT 
+        flight_code,
+        airplane_id,
+        fs.source, 
+        duration, 
+        fs.destination, 
+        flight_type, 
+        departure, 
+        arrival, 
+        model, 
+        maintainance, 
+        airplane_name, 
+        tickets.ticket_id, 
+        tickets.date_of_travel as booked_date, 
+        tickets.price, seat_number, 
+        source_airport.country_name as src_country_name, 
+        destination_airport.country_name as dst_country_name, 
+        source_airport.airport_name as src_airport, 
+        source_airport.IATA_code as srcIATA_code, 
+        destination_airport.IATA_code as dstIATA_code, 
+        destination_airport.airport_name as dst_airport
+      FROM flight_schedule fs 
+      join airplane using (airplane_id) 
+      join tickets using (flight_code) 
+      join passenger_books_and_cancels_tickets bcf on bcf.ticket_id = tickets.ticket_id
+      left join airport as source_airport on source_airport.state = fs.source 
+      left join airport as destination_airport on destination_airport.state = fs.destination 
+      WHERE bcf.passenger_id = ? AND departure >= ? order by departure`,
     [passenger_id, new Date()],
     (err, res) => {
       if (err) {

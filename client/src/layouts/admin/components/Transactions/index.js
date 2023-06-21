@@ -66,7 +66,7 @@ function Transactions() {
   const getFlightPaths = () => {
     setLoading(true);
     axios
-      .get(`flight`)
+      .get(`flights/allFlights`)
       .then((res) => {
         // console.log(res);
         setTotPages(Math.ceil(res.data.data.length / pageSize));
@@ -96,7 +96,7 @@ function Transactions() {
   return (
     <Card sx={{ height: "100%" }}>
       <CardHeader title="Flight Paths" sx={{ alignSelf: "center" }} />
-      <MDBox
+      {/* <MDBox
         display="flex"
         justifyContent="space-between"
         alignItems="center"
@@ -119,7 +119,7 @@ function Transactions() {
           <Search variant="filled" />
           &nbsp;Search
         </MDButton>
-      </MDBox>
+      </MDBox> */}
       {canWrite && (
         <MDBox
           display="flex"
@@ -159,25 +159,14 @@ function Transactions() {
       )}
 
       <Divider />
-      <MDBox display="flex" justifyContent="center" alignItems="center">
+      {/* <MDBox display="flex" justifyContent="center" alignItems="center">
         <Pagination
           count={totPages}
           page={currPage}
           onChange={handlePageChange}
           color="secondary"
         />
-        {/* &nbsp; &nbsp;
-        <TextField
-          name="name"
-          id="hour"
-          xs={2}
-          size="small"
-          label="Page Size"
-          type="number"
-          value={pageSize}
-          onChange={(e) => setPageSize(e.target.value)}
-        /> */}
-      </MDBox>
+      </MDBox> */}
       <MDBox pt={3} pb={2} px={2} sx={{ overflowX: "scroll" }}>
         {loading === true ? (
           <Spinner />

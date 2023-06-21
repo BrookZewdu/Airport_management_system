@@ -281,7 +281,7 @@ function Ticket({
             justifyContent={"center"}
             spacing={5}
           > */}
-          {canWrite === true && (
+          {/* {canWrite === true && (
             <Grid item md={4} lg={12}>
               <Dialog
                 title="Delay Flight"
@@ -303,9 +303,9 @@ function Ticket({
                 />
               </Dialog>
             </Grid>
-          )}
+          )} */}
 
-          {canWrite === true && (
+          {/* {canWrite === true && (
             <Grid item md={4} lg={12}>
               <MDButton
                 variant="gradient"
@@ -316,7 +316,7 @@ function Ticket({
                 &nbsp;CANCEL
               </MDButton>
             </Grid>
-          )}
+          )} */}
           {/* </Grid> */}
         </Grid>
       </Grid>

@@ -50,10 +50,11 @@ export default function App() {
     //   });
 
     if (localStorage.getItem("jwt")) {
-      const user = localStorage.getItem("user");
+      const user = JSON.parse(localStorage.getItem("user"));
       setCurrentUser(user);
       setAuthenticated(true);
       setCanRead(user.ROLE === "W" || user.ROLE === "R");
+      // console.log("ROLE", user, "Hello", user.ROLE);
       setCanWrite(user.ROLE === "W");
       setLoading(false);
     } else {

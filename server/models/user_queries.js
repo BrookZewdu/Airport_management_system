@@ -1,5 +1,6 @@
 const sql = require("../db");
 const { v4: uuidv4 } = require("uuid");
+const moment = require("moment");
 
 const Passenger = function createPassenger(passenger) {
   let result = {};
@@ -9,10 +10,24 @@ const Passenger = function createPassenger(passenger) {
   result.l_name = passenger.l_name;
   result.phone = passenger.phone;
   result.passport_number = passenger.passport_number;
-  result.passport_expiration = passenger.passport_expiration;
+  result.passport_expiration = moment(passenger.passport_expiration).format(
+    "YYYY-MM-DD"
+  );
   result.passport_country = passenger.passport_country;
-  result.date_of_birth = passenger.date_of_birth;
-  return;
+  result.date_of_birth = moment(passenger.date_of_birth).format("YYYY-MM-DD");
+  return result;
+};
+
+Passenger.isEmployee = async (email, result) => {
+  sql.query("SELECT * FROM employee WHERE email=?", [email], (err, res) => {
+    if (err) {
+      console.log("Error: ", err);
+      result(null, false);
+    }
+    console.log("Employee: " + res);
+    if (res.length === 0) return result(null, false);
+    result(null, true);
+  });
 };
 
 // const Staff = function createStaff(staff) {
@@ -101,6 +116,35 @@ Passenger.insertCustomer = (passenger, result) => {
     }
   );
 };
+
+Passenger.updateToEmployee = (email, result) => {
+  const uniqueId = uuidv4();
+  sql.query(
+    "INSERT INTO employee VALUES (?, ?)",
+    [uniqueId, email],
+    (err, res) => {
+      if (err) {
+        console.log("Error: ", err);
+        result(null, err);
+        return;
+      }
+      result(null, res);
+      console.log("Inserted Employee: " + res);
+    }
+  );
+};
+
+// Passenger.isEmployee = (email, result) => {
+//   sql.query("SELECT * FROM employee WHERE email=?", [email], (err, res) => {
+//     if (err) {
+//       console.log("Error: ", err);
+//       result(null, err);
+//       return;
+//     }
+//     console.log("Employee: " + res);
+//     result(null, res);
+//   });
+// };
 
 // Staff.insertStaff = (staff, result) => {
 //     sql.query('INSERT INTO airline_staff VALUES (?, ?, ?, ?, ?)',

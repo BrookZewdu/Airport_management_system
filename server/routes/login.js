@@ -12,29 +12,35 @@ router.post("/", async (req, res) => {
     if (err) throw err;
     if (data.length === 0) res.json({ error: "User does not exist" });
     else {
-      console.log(data);
-      console.log(data[0].password);
+      // console.log(data);
+      // console.log(data[0].password);
+
       bcrypt.compare(password, data[0].password).then((match) => {
         console.log({ error: "Checking password" });
+
         if (!match) {
           console.log("did not match");
           res.json({ error: "Wrong Username And Password Combination" });
           return;
         }
+
         console.log("Matched!");
         const secret = process.env.JWT_SECRET || "secret";
-        // console.log("data[0]", data[0]);
-        const accessToken = si  gn(
+        const accessToken = sign(
           { id: data[0].passenger_id, email: data[0].email },
           secret
         );
-        console.log(data);
-        res.json({
-          status: "success",
-          token: accessToken,
-          data: {
-            user: data[0],
-          },
+
+        const hold = data[0];
+        User.Passenger.isEmployee(email, (err, data) => {
+          // console.log("what", data);
+          res.json({
+            status: "success",
+            token: accessToken,
+            data: {
+              user: { ...hold, ROLE: data ? "W" : undefined },
+            },
+          });
         });
       });
     }

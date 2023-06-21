@@ -107,31 +107,6 @@ export default function Airport({ handleClose }) {
                   onChange={(e) => setCountry_name(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sx={{ mb: -1.8 }}>
-                <Typography> Offset </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  type="number"
-                  id="offsetHour"
-                  label="Hour"
-                  value={offsetHour}
-                  onChange={(e) => setOffsetHour(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  type="number"
-                  id="offsetMin"
-                  label="Minutes"
-                  value={offsetMin}
-                  onChange={(e) => setOffsetMin(e.target.value)}
-                />
-              </Grid>
             </Grid>
             {loading === true ? (
               <Spinner />

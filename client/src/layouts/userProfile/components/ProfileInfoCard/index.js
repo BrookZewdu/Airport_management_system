@@ -85,11 +85,7 @@ function ProfileInfoCard({
             textAlign="center"
             sx={{ mb: 5 }}
           >
-            {canWrite
-              ? "(SUPER-ADMIN)"
-              : canRead
-              ? "(ADMIN)"
-              : `(${profession})`}
+            {canWrite ? "Employee" : canRead ? "" : ``}
           </MDTypography>
         ) : null}
       </Grid>

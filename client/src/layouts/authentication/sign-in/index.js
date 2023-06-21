@@ -42,16 +42,17 @@ function Basic() {
         password: passVal,
       })
       .then((res) => {
-        // console.log(res);
+        console.log("USER>ROLE", res.data.data.user.ROLE);
         localStorage.setItem("jwt", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.data.user));
-        console.log("user: ", res.data.data.user);
+        // console.log("user: ", res.data.data.user);
         updateAuthData(
           true,
           res.data.data.user,
           res.data.data.user.ROLE === "W" || res.data.data.user.ROLE === "R",
           res.data.data.user.ROLE === "W"
         );
+
         // console.log(
         //   res.data.data.user,
         //   res.data.data.user.ROLE === "W" || res.data.data.user.ROLE === "R",

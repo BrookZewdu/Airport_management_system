@@ -4,7 +4,7 @@ const { Flight } = require("../models/flight_queries");
 const { Passenger } = require("../models/user_queries");
 const { validateToken } = require("../middleware/auth");
 
-router.get("/allFlights", async (req, res) => {
+router.get("/allFlights", validateToken, async (req, res) => {
   // console.log('hello', Flight);
   Flight.getAllFlights((err, data) => {
     if (err) throw err;
@@ -125,7 +125,7 @@ router.post("/cancelFlight/:ticketId", validateToken, async (req, res) => {
   Flight.cancelTicket(ticket, (err, data) => {
     if (err) throw err;
     if (data === null) {
-      res.json({ status: "No upcoming flights", data: [] });
+      res.json({ status: "Ticket Deleted", data: [] });
       return; // Stop execution here
     }
     res.status(200).json({

@@ -3,6 +3,7 @@ const loginRouter = require("./routes/login");
 const flightRouter = require("./routes/flight");
 const cityRouter = require("./routes/city");
 const userRouter = require("./routes/user");
+const adminRouter = require("./routes/admin");
 
 const express = require("express");
 const app = express();
@@ -21,6 +22,7 @@ app.use("/login", loginRouter);
 app.use("/flights", flightRouter);
 app.use("/cities", cityRouter);
 app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 
 // const staffRouter = require("./routes/Staff");
 // app.use("/staff", staffRouter);

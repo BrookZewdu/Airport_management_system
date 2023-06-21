@@ -154,7 +154,7 @@ function Transaction({
             .substring(0, 10)}
         </MDTypography>
         &nbsp;
-        {canWrite && (
+        {/* {canWrite && (
           <Dialog
             title="Edit Lease Date"
             action={
@@ -177,7 +177,7 @@ function Transaction({
               }}
             />
           </Dialog>
-        )}
+        )} */}
       </Grid>
       <Grid
         item
@@ -211,7 +211,7 @@ function Transaction({
           ETB {fare}
         </MDTypography>
         &nbsp;
-        {canWrite && (
+        {/* {canWrite && (
           <Dialog
             title="Edit Base Fare"
             action={
@@ -234,7 +234,7 @@ function Transaction({
               }}
             />
           </Dialog>
-        )}
+        )} */}
       </Grid>
     </Grid>
   );
@@ -316,7 +316,7 @@ function Transaction({
               variant={weekDays[6] === "1" ? "filled" : "outlined"}
               size="small"
             />
-            {canWrite && (
+            {/* {canWrite && (
               <Dialog
                 title="Edit Flight Days"
                 action={
@@ -337,7 +337,7 @@ function Transaction({
                   updateWeekDays={(str) => updateWeekDays(str)}
                 />
               </Dialog>
-            )}
+            )} */}
           </Stack>
         </Grid>
         <Grid
